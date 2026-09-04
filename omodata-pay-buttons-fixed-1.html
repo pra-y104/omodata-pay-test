@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OmoData Pay — Data & Airtime</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#e8f7ed;
+  color:#123524;
+}
+
+.wrap{
+  max-width:480px;
+  margin:auto;
+  padding:20px;
+}
+
+.brand{
+  text-align:center;
+  padding:28px 0 18px;
+}
+
+.brand h1{
+  margin:0;
+  color:#087a3b;
+  font-size:30px;
+}
+
+.brand p{
+  margin:6px;
+  color:#397252;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  margin:14px 0;
+  box-shadow:0 5px 20px #0000000d;
+}
+
+h2{
+  color:#087a3b;
+  margin-top:0;
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  margin:7px 0;
+  border:1px solid #cbded2;
+  border-radius:10px;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin:7px 0;
+  border:0;
+  border-radius:10px;
+  background:#087a3b;
+  color:white;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.secondary{
+  background:#dff2e6;
+  color:#087a3b;
+}
+
+.danger{
+  background:#b42318;
+}
+
+.msg{
+  display:none;
+  background:#f0f8f3;
+  padding:12px;
+  border-radius:10px;
+  margin:8px 0;
+  font-size:14px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.balance{
+  font-size:30px;
+  font-weight:bold;
+  color:#087a3b;
+}
+
+.small{
+  font-size:13px;
+  color:#678274;
+}
+
+.plan,.reward{
+  padding:14px;
+  border:1px solid #d5e5da;
+  border-radius:12px;
+  margin:10px 0;
+}
+
+.reward{
+  background:#f2faf5;
+}
+
+.nav{
+  position:sticky;
+  bottom:0;
+  background:white;
+  border-top:1px solid #d5e5da;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:7px;
+  margin:20px -20px -20px;
+}
+
+.nav button{
+  background:transparent;
+  color:#397252;
+  margin:0;
+  padding:10px 2px;
+  font-size:12px;
+}
+
+footer{
+  text-align:center;
+  color:#678274;
+  font-size:12px;
+  padding:25px 0;
+}
+  /* ===== OMODATA PAY DASHBOARD ===== */
+
+.dashboard{
+  min-height:100vh;
+  background:#f4fbf6;
+  color:#173b28;
+  padding-bottom:85px;
+}
+
+.top-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px 20px 14px;
+  max-width:520px;
+  margin:auto;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+  color:#087a3b;
+}
+
+.tagline{
+  font-size:12px;
+  color:#6c8375;
+  margin-top:3px;
+}
+
+.profile-icon{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#087a3b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.dashboard main{
+  max-width:520px;
+  margin:auto;
+  padding:8px 16px;
+}
+
+.balance-card{
+  background:#087a3b;
+  color:white;
+  border-radius:22px;
+  padding:23px;
+  margin-bottom:14px;
+  box-shadow:0 8px 24px #087a3b25;
+}
+
+.balance-label{
+  font-size:13px;
+  opacity:.85;
+}
+
+.big-balance{
+  font-size:34px;
+  font-weight:800;
+  margin:5px 0 18px;
+}
+
+.welcome{
+  font-size:14px;
+  opacity:.9;
+  line-height:1.5;
+}
+
+.welcome strong{
+  font-size:17px;
+}
+
+.wallet-card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.wallet-title{
+  font-size:13px;
+  color:#718379;
+}
+
+.wallet-amount{
+  font-size:22px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.fund-btn{
+  width:auto;
+  margin:0;
+  padding:11px 16px;
+  border-radius:10px;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.action-card{
+  background:white;
+  border:0;
+  border-radius:17px;
+  padding:17px;
+  text-align:left;
+  color:#173b28;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.action-card .action-icon{
+  font-size:23px;
+  margin-bottom:10px;
+}
+
+.action-card strong{
+  display:block;
+  font-size:15px;
+}
+
+.action-card span{
+  display:block;
+  color:#7a8d82;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.invite-card{
+  background:#e4f5e9;
+  border-radius:18px;
+  padding:17px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.invite-icon{
+  font-size:25px;
+}
+
+.invite-content{
+  flex:1;
+}
+
+.invite-content h3{
+  margin:0;
+  color:#087a3b;
+  font-size:16px;
+}
+
+.invite-content p{
+  margin:4px 0 0;
+  font-size:12px;
+  color:#60776a;
+}
+
+.invite-btn{
+  width:auto;
+  margin:0;
+  padding:9px 13px;
+  font-size:12px;
+}
+
+.activity-card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.section-heading h2{
+  margin:0;
+  font-size:17px;
+  color:#173b28;
+}
+
+.view-all{
+  width:auto;
+  margin:0;
+  padding:5px;
+  background:none;
+  color:#087a3b;
+  font-size:12px;
+}
+
+.empty-activity{
+  text-align:center;
+  padding:28px 10px;
+  color:#7a8d82;
+  font-size:14px;
+}
+
+.empty-icon{
+  font-size:24px;
+  margin-bottom:7px;
+}
+
+.empty-activity small{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:white;
+  border-top:1px solid #e0e9e3;
+  display:flex;
+  justify-content:space-around;
+  z-index:100;
+}
+
+.nav-item{
+  flex:1;
+  background:none;
+  color:#789084;
+  border-radius:0;
+  margin:0;
+  padding:7px 0;
+}
+
+.nav-item span{
+  display:block;
+  font-size:20px;
+}
+
+.nav-item small{
+  font-size:11px;
+}
+
+.nav-item.active{
+  color:#087a3b;
+  font-weight:bold;
+}
+
+@media(max-width:380px){
+  .big-balance{
+    font-size:30px;
+  }
+
+  .wallet-card{
+    padding:15px;
+  }
+
+  .fund-btn{
+    padding:9px 12px;
+  }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- AUTH -->
+<div id="auth" class="wrap">
+
+  <div class="brand">
+    <h1>OMODATA PAY</h1>
+    <p>DATA · AIRTIME</p>
+  </div>
+
+  <div class="card">
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+
+      <h2>Welcome back</h2>
+
+      <div id="loginMsg" class="msg"></div>
+
+      <input id="loginEmail"
+             type="email"
+             placeholder="Email address">
+
+      <input id="loginPassword"
+             type="password"
+             placeholder="Password">
+
+      <button id="loginBtn" type="button">
+        Sign In
+      </button>
+
+      <button id="showSignupBtn"
+              class="secondary"
+              type="button">
+        Create Account
+      </button>
+
+    </div>
+
+
+    <!-- SIGNUP -->
+    <div id="signupBox" class="hidden">
+
+      <h2>Create Account</h2>
+
+      <div id="signupMsg" class="msg"></div>
+
+      <input id="signupName"
+             type="text"
+             placeholder="Full name">
+
+      <input id="signupPhone"
+             type="tel"
+             placeholder="Phone number">
+
+      <input id="signupEmail"
+             type="email"
+             placeholder="Email address">
+
+      <input id="signupPassword"
+             type="password"
+             placeholder="Password">
+
+      <button id="signupBtn" type="button">
+        Create Account
+      </button>
+
+      <button id="showLoginBtn"
+              class="secondary"
+              type="button">
+        I already have an account
+      </button>
+
+    </div>
+
+  </div>
+
+  <footer>
+    Data and airtime, done properly.
+  </footer>
+
+</div>
+
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <div class="dashboard">
+
+  <header class="top-header">
+    <div>
+      <div class="logo">OmoData Pay</div>
+      <div class="tagline">Data · Airtime</div>
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <!-- BALANCE -->
+    <section class="balance-card">
+
+      <div class="balance-label">Balance</div>
+
+      <div id="walletBalance" class="big-balance">
+        ₦0.00
+      </div>
+
+      <div class="welcome">
+        Welcome back,<br>
+        <strong id="welcomeText">Loading... 👋</strong>
+      </div>
+
+    </section>
+
+
+    <!-- WALLET -->
+    <section class="wallet-card">
+
+      <div>
+        <div class="wallet-title">Wallet Balance</div>
+
+        <div id="walletBalance2"
+             class="wallet-amount">
+          ₦0.00
+        </div>
+      </div>
+
+      <button id="fundWalletBtn"
+              class="fund-btn"
+              type="button">
+        Fund Wallet
+      </button>
+
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
+    <section class="actions">
+
+      <button class="action-card"
+              data-page="dataPage"
+              type="button">
+        <div class="action-icon">📶</div>
+        <strong>Buy Data</strong>
+        <span>Data</span>
+      </button>
+
+
+      <button class="action-card"
+              data-page="airtimePage"
+              type="button">
+        <div class="action-icon">📱</div>
+        <strong>Buy Airtime</strong>
+        <span>Airtime</span>
+      </button>
+
+
+      <button class="action-card"
+              data-page="walletPage"
+              type="button">
+        <div class="action-icon">💳</div>
+        <strong>Wallet</strong>
+        <span>Wallet</span>
+      </button>
+
+
+      <button class="action-card"
+              type="button"
+              onclick="showPage('homePage')">
+        <div class="action-icon">🎁</div>
+        <strong>Rewards</strong>
+        <span>Rewards</span>
+      </button>
+
+    </section>
+
+
+    <!-- INVITE -->
+    <section class="invite-card">
+
+      <div class="invite-icon">🎁</div>
+
+      <div class="invite-content">
+        <h3>Invite & Earn</h3>
+        <p>Share OmoData Pay with friends.</p>
+      </div>
+
+      <button type="button"
+              class="invite-btn"
+              onclick="alert('Invite & Earn will be connected soon.')">
+        Invite
+      </button>
+
+    </section>
+
+
+    <!-- RECENT ACTIVITY -->
+    <section class="activity-card">
+
+      <div class="section-heading">
+        <h2>Recent activity</h2>
+
+        <button type="button"
+                class="view-all"
+                data-page="transactionsPage">
+          View all
+        </button>
+      </div>
+
+
+      <div id="recentActivity">
+
+        <div class="empty-activity">
+          <div class="empty-icon">↔</div>
+          <div>No recent activity</div>
+          <small>
+            Your data and airtime purchases will appear here.
+          </small>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <button type="button"
+            data-page="homePage"
+            class="nav-item active">
+      <span>⌂</span>
+      <small>Home</small>
+    </button>
+
+
+    <button type="button"
+            data-page="dataPage"
+            class="nav-item">
+      <span>▣</span>
+      <small>Data</small>
+    </button>
+
+
+    <button type="button"
+            data-page="airtimePage"
+            class="nav-item">
+      <span>▤</span>
+      <small>Airtime</small>
+    </button>
+
+
+    <button type="button"
+            data-page="walletPage"
+            class="nav-item">
+      <span>◉</span>
+      <small>Wallet</small>
+    </button>
+
+  </nav>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- DATA -->
+    <section id="dataPage" class="hidden">
+
+      <div class="card">
+
+        <h2>Buy Data</h2>
+
+        <p class="small">
+          Choose an active plan.
+        </p>
+
+        <select id="networkSelect">
+          <option value="">Select network</option>
+          <option>MTN</option>
+          <option>Airtel</option>
+          <option>Glo</option>
+          <option>9mobile</option>
+        </select>
+
+        <div id="dataMessage" class="msg"></div>
+
+        <div class="plan">
+          Data plans will appear here when connected to the supplier.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- AIRTIME -->
+    <section id="airtimePage" class="hidden">
+
+      <div class="card">
+
+        <h2>Buy Airtime</h2>
+
+        <input id="airtimePhone"
+               type="tel"
+               placeholder="Phone number">
+
+        <select id="airtimeNetwork">
+          <option value="">Select network</option>
+          <option>MTN</option>
+          <option>Airtel</option>
+          <option>Glo</option>
+          <option>9mobile</option>
+        </select>
+
+        <input id="airtimeAmount"
+               type="number"
+               placeholder="Amount (₦)">
+
+        <button id="airtimeBtn" type="button">
+          Continue
+        </button>
+
+        <div id="airtimeMessage" class="msg"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- WALLET -->
+    <section id="walletPage" class="hidden">
+
+      <div class="card">
+
+        <h2>Wallet</h2>
+
+        <div id="walletBalancePage"
+             class="balance">
+          ₦0.00
+        </div>
+
+        <button id="fundWalletBtn" type="button">
+          Fund Wallet
+        </button>
+
+        <div id="walletMessage" class="msg"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- TRANSACTIONS -->
+    <section id="transactionsPage" class="hidden">
+
+      <div class="card">
+
+        <h2>Transactions</h2>
+
+        <p class="small">
+          No transactions yet.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+    <section id="profilePage" class="hidden">
+
+      <div class="card">
+
+        <h2>Profile</h2>
+
+        <input id="profileName"
+               placeholder="Full name">
+
+        <input id="profilePhone"
+               placeholder="Phone number">
+
+        <button id="saveProfileBtn" type="button">
+          Save Profile
+        </button>
+
+        <div id="profileMessage" class="msg"></div>
+
+        <button id="logoutBtn"
+                class="danger"
+                type="button">
+          Sign Out
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- NAV -->
+    <div class="nav">
+
+      <button type="button"
+              data-page="homePage">
+        Home
+      </button>
+
+      <button type="button"
+              data-page="dataPage">
+        Data
+      </button>
+
+      <button type="button"
+              data-page="airtimePage">
+        Airtime
+      </button>
+
+      <button type="button"
+              data-page="transactionsPage">
+        More
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+const SUPABASE_URL="https://kncjlguqbttxubdhlqyu.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_QkVH2iwGS1Tj4v1Td-HqVg_8mJoyY5l";
+let supabaseClient=null,currentUser=null;
+
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function msg(el,text){ if(el){ el.textContent=text; el.style.display="block"; } }
+  function hide(el){ if(el){ el.textContent=""; el.style.display="none"; } }
+
+  function showLogin(){
+    $("signupBox")?.classList.add("hidden");
+    $("loginBox")?.classList.remove("hidden");
+    hide($("signupMsg"));
+  }
+  function showSignup(){
+    $("loginBox")?.classList.add("hidden");
+    $("signupBox")?.classList.remove("hidden");
+    hide($("loginMsg"));
+  }
+  function setName(user){
+    const el=$("welcomeText");
+    if(!el) return;
+    const name=user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "there";
+    el.textContent=name+" 👋";
+  }
+  function showPage(id){
+    const dashboard=document.querySelector(".dashboard");
+    const pages=["dataPage","airtimePage","walletPage","transactionsPage","profilePage"];
+    pages.forEach(x=>$(x)?.classList.add("hidden"));
+    if(id==="homePage"){
+      dashboard?.classList.remove("hidden");
+      return;
+    }
+    dashboard?.classList.remove("hidden");
+    $(id)?.classList.remove("hidden");
+  }
+  // Make this available to the few existing inline HTML handlers too.
+  window.showPage=showPage;
+
+  function openApp(user){
+    currentUser=user||currentUser;
+    $("auth")?.classList.add("hidden");
+    $("app")?.classList.remove("hidden");
+    setName(currentUser);
+    showPage("homePage");
+  }
+  function showAuth(){
+    $("app")?.classList.add("hidden");
+    $("auth")?.classList.remove("hidden");
+    showLogin();
+  }
+
+  function init(){
+    if(window.supabase && typeof window.supabase.createClient==="function"){
+      supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    }
+
+    $("showLoginBtn")?.addEventListener("click",showLogin);
+    $("showSignupBtn")?.addEventListener("click",showSignup);
+
+    $("loginBtn")?.addEventListener("click",async function(){
+      const email=($("loginEmail")?.value||"").trim();
+      const password=$("loginPassword")?.value||"";
+      const m=$("loginMsg"); hide(m);
+      if(!email||!password) return msg(m,"Enter your email and password.");
+      if(!supabaseClient) return msg(m,"Supabase is not connected. Check your internet connection.");
+      const b=$("loginBtn"); if(b){b.disabled=true;b.textContent="Signing in...";}
+      try{
+        const result=await supabaseClient.auth.signInWithPassword({email,password});
+        if(result.error) msg(m,result.error.message);
+        else openApp(result.data.user);
+      }catch(e){ console.error(e); msg(m,"Sign in could not be completed. Please try again."); }
+      finally{ if(b){b.disabled=false;b.textContent="Sign In";} }
+    });
+
+    $("signupBtn")?.addEventListener("click",async function(){
+      const name=($("signupName")?.value||"").trim();
+      const phone=($("signupPhone")?.value||"").trim();
+      const email=($("signupEmail")?.value||"").trim();
+      const password=$("signupPassword")?.value||"";
+      const m=$("signupMsg"); hide(m);
+      if(!name||!email||!password) return msg(m,"Enter your name, email and password.");
+      if(password.length<6) return msg(m,"Password must be at least 6 characters.");
+      if(!supabaseClient) return msg(m,"Supabase is not connected. Check your internet connection.");
+      const b=$("signupBtn"); if(b){b.disabled=true;b.textContent="Creating account...";}
+      try{
+        const result=await supabaseClient.auth.signUp({email,password,options:{data:{full_name:name,phone}}});
+        if(result.error) msg(m,result.error.message);
+        else if(result.data.session) openApp(result.data.user);
+        else msg(m,"Account created. You can now sign in.");
+      }catch(e){ console.error(e); msg(m,"Account creation could not be completed. Please try again."); }
+      finally{ if(b){b.disabled=false;b.textContent="Create Account";} }
+    });
+
+    document.querySelectorAll("[data-page]").forEach(function(b){
+      b.addEventListener("click",function(){ showPage(b.getAttribute("data-page")); });
+    });
+
+    document.querySelectorAll("#airtimeBtn").forEach(function(b){
+      b.addEventListener("click",function(){ msg($("airtimeMessage"),"Airtime purchasing is not connected yet. No money will be charged."); });
+    });
+    document.querySelectorAll("#fundWalletBtn").forEach(function(b){
+      b.addEventListener("click",function(){ msg($("walletMessage"),"Wallet funding is not connected yet. No money will be charged."); });
+    });
+    $("saveProfileBtn")?.addEventListener("click",function(){ msg($("profileMessage"),"Profile saving will be connected after authentication is working."); });
+    $("logoutBtn")?.addEventListener("click",async function(){
+      if(supabaseClient) await supabaseClient.auth.signOut();
+      currentUser=null; showAuth();
+    });
+
+    if(supabaseClient){
+      supabaseClient.auth.getSession().then(function(result){
+        if(result.data?.session?.user) openApp(result.data.session.user);
+      }).catch(function(e){console.error(e);});
+    }
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init);
+  else init();
+})();
+</script>
+
+</body>
+  </html>
