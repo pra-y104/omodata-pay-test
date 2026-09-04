@@ -6,7 +6,279 @@
 <title>OmoData Pay — Data & Airtime</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+/* ===== OMODATA PAY DASHBOARD ===== */
 
+.dashboard{
+  min-height:100vh;
+  background:#f4fbf6;
+  color:#173b28;
+  padding-bottom:85px;
+}
+
+.top-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px 20px 14px;
+  max-width:520px;
+  margin:auto;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+  color:#087a3b;
+}
+
+.tagline{
+  font-size:12px;
+  color:#6c8375;
+  margin-top:3px;
+}
+
+.profile-icon{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#087a3b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.dashboard main{
+  max-width:520px;
+  margin:auto;
+  padding:8px 16px;
+}
+
+.balance-card{
+  background:#087a3b;
+  color:white;
+  border-radius:22px;
+  padding:23px;
+  margin-bottom:14px;
+  box-shadow:0 8px 24px #087a3b25;
+}
+
+.balance-label{
+  font-size:13px;
+  opacity:.85;
+}
+
+.big-balance{
+  font-size:34px;
+  font-weight:800;
+  margin:5px 0 18px;
+}
+
+.welcome{
+  font-size:14px;
+  opacity:.9;
+  line-height:1.5;
+}
+
+.welcome strong{
+  font-size:17px;
+}
+
+.wallet-card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.wallet-title{
+  font-size:13px;
+  color:#718379;
+}
+
+.wallet-amount{
+  font-size:22px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.fund-btn{
+  width:auto;
+  margin:0;
+  padding:11px 16px;
+  border-radius:10px;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.action-card{
+  background:white;
+  border:0;
+  border-radius:17px;
+  padding:17px;
+  text-align:left;
+  color:#173b28;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.action-card .action-icon{
+  font-size:23px;
+  margin-bottom:10px;
+}
+
+.action-card strong{
+  display:block;
+  font-size:15px;
+}
+
+.action-card span{
+  display:block;
+  color:#7a8d82;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.invite-card{
+  background:#e4f5e9;
+  border-radius:18px;
+  padding:17px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.invite-icon{
+  font-size:25px;
+}
+
+.invite-content{
+  flex:1;
+}
+
+.invite-content h3{
+  margin:0;
+  color:#087a3b;
+  font-size:16px;
+}
+
+.invite-content p{
+  margin:4px 0 0;
+  font-size:12px;
+  color:#60776a;
+}
+
+.invite-btn{
+  width:auto;
+  margin:0;
+  padding:9px 13px;
+  font-size:12px;
+}
+
+.activity-card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 4px 16px #00000008;
+}
+
+.section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.section-heading h2{
+  margin:0;
+  font-size:17px;
+  color:#173b28;
+}
+
+.view-all{
+  width:auto;
+  margin:0;
+  padding:5px;
+  background:none;
+  color:#087a3b;
+  font-size:12px;
+}
+
+.empty-activity{
+  text-align:center;
+  padding:28px 10px;
+  color:#7a8d82;
+  font-size:14px;
+}
+
+.empty-icon{
+  font-size:24px;
+  margin-bottom:7px;
+}
+
+.empty-activity small{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:white;
+  border-top:1px solid #e0e9e3;
+  display:flex;
+  justify-content:space-around;
+  z-index:100;
+}
+
+.nav-item{
+  flex:1;
+  background:none;
+  color:#789084;
+  border-radius:0;
+  margin:0;
+  padding:7px 0;
+}
+
+.nav-item span{
+  display:block;
+  font-size:20px;
+}
+
+.nav-item small{
+  font-size:11px;
+}
+
+.nav-item.active{
+  color:#087a3b;
+  font-weight:bold;
+}
+
+@media(max-width:380px){
+  .big-balance{
+    font-size:30px;
+  }
+
+  .wallet-card{
+    padding:15px;
+  }
+
+  .fund-btn{
+    padding:9px 12px;
+  }
+}
 <style>
 *{box-sizing:border-box}
 
@@ -233,88 +505,187 @@ footer{
 <!-- APP -->
 <div id="app" class="hidden">
 
-  <div class="wrap">
+  <div class="dashboard">
 
-    <div class="brand">
-      <h1>OMODATA PAY</h1>
-      <p>DATA · AIRTIME</p>
+  <header class="top-header">
+    <div>
+      <div class="logo">OmoData Pay</div>
+      <div class="tagline">Data · Airtime</div>
     </div>
 
+    <div class="profile-icon">P</div>
+  </header>
 
-    <!-- HOME -->
-    <section id="homePage">
 
-      <div class="card">
+  <main>
 
-        <div class="small">
-          Wallet Balance
-        </div>
+    <!-- BALANCE -->
+    <section class="balance-card">
 
-        <div id="walletBalance"
-             class="balance">
+      <div class="balance-label">Balance</div>
+
+      <div id="walletBalance" class="big-balance">
+        ₦0.00
+      </div>
+
+      <div class="welcome">
+        Welcome back,<br>
+        <strong id="welcomeText">pimoehiose 👋</strong>
+      </div>
+
+    </section>
+
+
+    <!-- WALLET -->
+    <section class="wallet-card">
+
+      <div>
+        <div class="wallet-title">Wallet Balance</div>
+
+        <div id="walletBalance2"
+             class="wallet-amount">
           ₦0.00
         </div>
+      </div>
 
-        <p id="welcomeText">
-          Welcome back 👋
-        </p>
+      <button id="fundWalletBtn"
+              class="fund-btn"
+              type="button">
+        Fund Wallet
+      </button>
 
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
+    <section class="actions">
+
+      <button class="action-card"
+              data-page="dataPage"
+              type="button">
+        <div class="action-icon">📶</div>
+        <strong>Buy Data</strong>
+        <span>Data</span>
+      </button>
+
+
+      <button class="action-card"
+              data-page="airtimePage"
+              type="button">
+        <div class="action-icon">📱</div>
+        <strong>Buy Airtime</strong>
+        <span>Airtime</span>
+      </button>
+
+
+      <button class="action-card"
+              data-page="walletPage"
+              type="button">
+        <div class="action-icon">💳</div>
+        <strong>Wallet</strong>
+        <span>Wallet</span>
+      </button>
+
+
+      <button class="action-card"
+              type="button"
+              onclick="showPage('homePage')">
+        <div class="action-icon">🎁</div>
+        <strong>Rewards</strong>
+        <span>Rewards</span>
+      </button>
+
+    </section>
+
+
+    <!-- INVITE -->
+    <section class="invite-card">
+
+      <div class="invite-icon">🎁</div>
+
+      <div class="invite-content">
+        <h3>Invite & Earn</h3>
+        <p>Share OmoData Pay with friends.</p>
+      </div>
+
+      <button type="button"
+              class="invite-btn"
+              onclick="alert('Invite & Earn will be connected soon.')">
+        Invite
+      </button>
+
+    </section>
+
+
+    <!-- RECENT ACTIVITY -->
+    <section class="activity-card">
+
+      <div class="section-heading">
+        <h2>Recent activity</h2>
+
+        <button type="button"
+                class="view-all"
+                data-page="transactionsPage">
+          View all
+        </button>
       </div>
 
 
-      <div class="card">
+      <div id="recentActivity">
 
-        <h2>Quick Actions</h2>
-
-        <button type="button"
-                data-page="dataPage">
-          Buy Data
-        </button>
-
-        <button type="button"
-                data-page="airtimePage">
-          Buy Airtime
-        </button>
-
-        <button type="button"
-                data-page="walletPage"
-                class="secondary">
-          Wallet
-        </button>
-
-      </div>
-
-
-      <div class="card">
-
-        <h2>Rewards</h2>
-
-        <div class="reward">
-          <b>Cashback</b><br>
-          <span class="small">Cashback: OFF</span>
-        </div>
-
-        <div class="reward">
-          <b>Loyalty Points</b><br>
-          <span class="small">Available when activated.</span>
-        </div>
-
-        <div class="reward">
-          <b>Festive Promotions</b><br>
-          <span class="small">Available when activated.</span>
-        </div>
-
-        <div class="reward">
-          <b>Anniversary Rewards</b><br>
-          <span class="small">Available when activated.</span>
-        </div>
-
-        <div class="reward">
-          <b>Invite & Earn</b><br>
-          <span class="small">Share OmoData Pay with friends.</span>
+        <div class="empty-activity">
+          <div class="empty-icon">↔</div>
+          <div>No recent activity</div>
+          <small>
+            Your data and airtime purchases will appear here.
+          </small>
         </div>
 
       </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <button type="button"
+            data-page="homePage"
+            class="nav-item active">
+      <span>⌂</span>
+      <small>Home</small>
+    </button>
+
+
+    <button type="button"
+            data-page="dataPage"
+            class="nav-item">
+      <span>▣</span>
+      <small>Data</small>
+    </button>
+
+
+    <button type="button"
+            data-page="airtimePage"
+            class="nav-item">
+      <span>▤</span>
+      <small>Airtime</small>
+    </button>
+
+
+    <button type="button"
+            data-page="walletPage"
+            class="nav-item">
+      <span>◉</span>
+      <small>Wallet</small>
+    </button>
+
+  </nav>
+
+      </div>
+
 
     </section>
 
