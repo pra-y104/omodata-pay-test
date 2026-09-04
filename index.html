@@ -514,7 +514,6 @@ footer{
       <div class="tagline">Data · Airtime</div>
     </div>
 
-    <div class="profile-icon">P</div>
   </header>
 
 
@@ -531,8 +530,7 @@ footer{
 
       <div class="welcome">
         Welcome back,<br>
-        <strong id="welcomeText">pimoehiose 👋</strong>
-      </div>
+        <strong id="welcomeText">Loading... 👋</strong>
 
     </section>
 
@@ -1213,20 +1211,28 @@ document.addEventListener("DOMContentLoaded", function(){
 
   /* ---------- OPEN APP ---------- */
 
-  function openApp(){
+  async function openApp() {
+  auth.classList.add("hidden");
+  app.classList.remove("hidden");
 
-    auth.classList.add("hidden");
-    app.classList.remove("hidden");
+  const { data: { user } } = await supabase.auth.getUser();
 
+  const welcomeText = document.getElementById("welcomeText");
+
+  if (!welcomeText) return;
+
+  if (user) {
     const name =
-      document.getElementById("signupName").value.trim();
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email?.split("@")[0] ||
+      "there";
 
-    if(name){
-
-      document.getElementById("welcomeText").textContent =
-        "Welcome back, " + name + " 👋";
-
-    }
+    welcomeText.textContent = name + " 👋";
+  } else {
+    welcomeText.textContent = "there 👋";
+  }
+  }
 
   }
 
