@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087a3b">
+<meta name="omodata-build" content="admin-customer-management-connected-rpc-2026-09-05">
+<title>OmoData Pay — Data & Airtime</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#eef8f1;color:#173b28}body{overflow-x:hidden}.hidden{display:none!important}button,input,select{font:inherit}button{border:0;cursor:pointer}.app-shell{min-height:100vh;background:#f5fbf7}.auth{max-width:480px;margin:auto;padding:28px 20px}.brand{text-align:center;padding:30px 0 18px}.brand h1{margin:0;color:#087a3b;font-size:31px}.brand p{margin:6px;color:#557563}.card{background:#fff;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 7px 25px #1235240c}.card h2{margin:0 0 8px;color:#087a3b}input,select{width:100%;padding:14px;margin:7px 0;border:1px solid #d3e3d8;border-radius:12px;background:#fff;outline:none}input:focus,select:focus{border-color:#087a3b;box-shadow:0 0 0 3px #087a3b18}.primary{width:100%;padding:14px;margin:7px 0;border-radius:12px;background:#087a3b;color:#fff;font-weight:800}.secondary{width:100%;padding:14px;margin:7px 0;border-radius:12px;background:#e3f4e9;color:#087a3b;font-weight:800}.danger{background:#b42318!important;color:#fff!important}.msg{display:none;background:#eff8f2;padding:12px;border-radius:12px;margin:8px 0;font-size:13px}.small{font-size:13px;color:#70857a}.screen-wrap{min-height:100vh;padding-bottom:84px}.topbar{position:sticky;top:0;z-index:20;background:#f5fbf7ee;backdrop-filter:blur(12px);border-bottom:1px solid #e1ece5}.topbar-inner{height:66px;max-width:560px;margin:auto;padding:0 18px;display:flex;align-items:center;justify-content:space-between}.brand-mini{font-weight:900;color:#087a3b;font-size:21px}.brand-mini small{display:block;color:#70857a;font-size:10px;font-weight:700;margin-top:2px}.icon-btn{width:40px;height:40px;border-radius:50%;background:#e3f4e9;color:#087a3b;font-weight:900}.screen{max-width:560px;margin:auto;padding:18px 16px}.hero{background:linear-gradient(135deg,#087a3b,#0b9a4d);color:#fff;border-radius:24px;padding:22px;box-shadow:0 12px 30px #087a3b25}.hero-label{font-size:13px;opacity:.85}.hero-balance{font-size:36px;font-weight:900;margin:5px 0 17px}.hero-welcome{font-size:13px}.hero-welcome strong{font-size:17px}.wallet-row{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 5px 18px #1235240a}.wallet-amount{font-size:22px;font-weight:900;margin-top:3px}.fund-mini{width:auto;margin:0;padding:10px 14px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.action{background:#fff;border-radius:18px;padding:18px;text-align:left;min-height:112px;box-shadow:0 5px 18px #1235240a}.action .ico{font-size:25px;margin-bottom:12px}.action strong{display:block;font-size:15px}.action span{display:block;color:#788b81;font-size:12px;margin-top:4px}.invite{margin-top:14px;background:#e3f4e9;border-radius:18px;padding:17px;display:flex;align-items:center;gap:12px}.invite .grow{flex:1}.invite h3{margin:0;color:#087a3b;font-size:16px}.invite p{margin:4px 0 0;color:#64786d;font-size:12px}.mini-btn{width:auto;margin:0;padding:10px 13px}.section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 10px}.section-title h2{margin:0;font-size:18px}.section-title button{width:auto;background:none;color:#087a3b;padding:4px}.empty{background:#fff;border-radius:18px;padding:28px 18px;text-align:center;color:#788b81;box-shadow:0 5px 18px #1235240a}.page-card{background:#fff;border-radius:20px;padding:20px;box-shadow:0 7px 25px #1235240c}.back{display:inline-flex;align-items:center;gap:6px;background:#e3f4e9;color:#087a3b;padding:9px 12px;border-radius:10px;font-weight:800;margin-bottom:15px}.network-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.network{background:#f4faf6;border:1px solid #dbe9df;border-radius:14px;padding:14px;text-align:left}.network strong{display:block}.network small{color:#718379}.plan{border:1px solid #dbe8df;border-radius:15px;padding:15px;margin:10px 0}.plan-top{display:flex;justify-content:space-between;gap:10px}.plan-price{color:#087a3b;font-weight:900}.settings-list{display:grid;gap:10px}.setting{display:flex;align-items:center;justify-content:space-between;background:#f5faf7;border-radius:14px;padding:15px}.setting div{display:flex;gap:12px;align-items:center}.setting-icon{font-size:21px}.bottom{position:fixed;bottom:0;left:0;right:0;height:72px;background:#fff;border-top:1px solid #dfeae3;display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}.bottom button{flex:1;background:none;color:#7a8e83;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.bottom button.active{color:#087a3b;font-weight:900}.bottom .bi{font-size:20px}.bottom small{font-size:10px}.toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);background:#173b28;color:#fff;padding:11px 15px;border-radius:12px;font-size:13px;z-index:50;box-shadow:0 8px 25px #0002}.profile-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}.avatar{width:58px;height:58px;border-radius:50%;background:#087a3b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900}.profile-head h2{margin:0}.profile-head p{margin:3px 0;color:#718379;font-size:12px}.switch{position:relative;width:48px;height:28px;display:inline-block;flex:none}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;border-radius:30px;background:#cfdad3}.slider:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #0002}.switch input:checked+.slider{background:#087a3b}.switch input:checked+.slider:before{transform:translateX(20px)}.switch input:disabled+.slider{opacity:.65}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.admin-stat{background:#f5faf7;border-radius:14px;padding:14px;display:flex;gap:10px;align-items:center}.admin-stat>span{font-size:22px}.admin-stat strong{display:block;font-size:14px}.admin-stat small{display:block;color:#718379;font-size:11px;margin-top:3px}.admin-section-title{font-size:16px;margin:20px 0 5px;color:#173b28}@media(max-width:380px){.screen{padding:15px 12px}.hero-balance{font-size:31px}.action{padding:15px}}
+.admin-stat{font:inherit;text-align:left;width:100%;border:0;cursor:pointer}.admin-stat:hover{transform:translateY(-1px)}
+</style>
+</head>
+<body>
+<div id="auth" class="auth">
+  <div class="brand"><h1>OMODATA PAY</h1><p>DATA · AIRTIME</p></div>
+  <div class="card">
+    <div id="loginBox">
+      <h2>Welcome back</h2><div id="loginMsg" class="msg"></div>
+      <input id="loginEmail" type="email" placeholder="Email address" autocomplete="email">
+      <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="loginBtn" class="primary" type="button">Sign In</button>
+      <button id="showSignupBtn" class="secondary" type="button">Create Account</button>
+    </div>
+    <div id="signupBox" class="hidden">
+      <h2>Create Account</h2><div id="signupMsg" class="msg"></div>
+      <input id="signupName" type="text" placeholder="Full name" autocomplete="name">
+      <input id="signupPhone" type="tel" placeholder="Phone number" autocomplete="tel">
+      <input id="signupEmail" type="email" placeholder="Email address" autocomplete="email">
+      <input id="signupPassword" type="password" placeholder="Password" autocomplete="new-password">
+      <button id="signupBtn" class="primary" type="button">Create Account</button>
+      <button id="showLoginBtn" class="secondary" type="button">I already have an account</button>
+    </div>
+  </div>
+  <p class="small" style="text-align:center">Data and airtime, done properly.</p>
+</div>
+
+<div id="app" class="app-shell hidden">
+  <div class="screen-wrap">
+    <header class="topbar"><div class="topbar-inner"><div class="brand-mini">OmoData Pay<small>DATA · AIRTIME</small></div><button class="icon-btn" data-page="profilePage" type="button">☻</button></div></header>
+
+    <main id="homePage" class="screen page-screen">
+      <section class="hero"><div class="hero-label">Wallet balance</div><div id="walletBalance" class="hero-balance">₦0.00</div><div class="hero-welcome">Welcome back,<br><strong id="welcomeText">Loading... 👋</strong></div></section>
+      <button id="adminHomeBtn" class="setting hidden" type="button" style="width:100%;margin-top:14px;text-align:left">
+        <div><span class="setting-icon">⚙️</span><span><strong>Admin Dashboard</strong><br><small class="small">Private admin control center</small></span></div><span>›</span>
+      </button>
+      <section class="wallet-row"><div><div class="small">Available wallet</div><div id="walletBalance2" class="wallet-amount">₦0.00</div></div><button id="fundWalletHome" class="primary fund-mini" type="button">Fund Wallet</button></section>
+      <section class="actions">
+        <button class="action" data-page="dataPage" type="button"><div class="ico">📶</div><strong>Buy Data</strong><span>Choose a data plan</span></button>
+        <button class="action" data-page="airtimePage" type="button"><div class="ico">📱</div><strong>Buy Airtime</strong><span>Recharge a number</span></button>
+        <button class="action" data-page="walletPage" type="button"><div class="ico">💳</div><strong>Wallet</strong><span>Balance & funding</span></button>
+        <button class="action" data-page="rewardsPage" type="button"><div class="ico">🎁</div><strong>Rewards</strong><span>Benefits & loyalty</span></button>
+      </section>
+      <section class="invite"><div style="font-size:26px">🤝</div><div class="grow"><h3>Invite & Earn</h3><p>Share OmoData Pay with friends.</p></div><button id="inviteBtn" class="primary mini-btn" type="button">Invite</button></section>
+      <div class="section-title"><h2>Recent activity</h2><button data-page="transactionsPage" type="button">View all</button></div>
+      <div id="recentActivity" class="empty"><div style="font-size:25px">↔</div><div>No transactions yet</div><small>Your data and airtime purchases will appear here.</small></div>
+    </main>
+
+    <main id="dataPage" class="screen page-screen hidden">
+      <button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Buy Data</h2><p class="small">Choose your network first.</p>
+        <div class="network-grid"><button class="network" data-network="MTN" type="button"><strong>MTN</strong><small>Data bundles</small></button><button class="network" data-network="Airtel" type="button"><strong>Airtel</strong><small>Data bundles</small></button><button class="network" data-network="Glo" type="button"><strong>Glo</strong><small>Data bundles</small></button><button class="network" data-network="9mobile" type="button"><strong>9mobile</strong><small>Data bundles</small></button></div>
+        <div id="dataMessage" class="msg"></div><div class="plan"><div class="plan-top"><strong>Supplier plans</strong><span class="plan-price">Coming soon</span></div><p class="small">Live plans will appear here after a legitimate supplier is connected. No fake prices or fake discounts.</p></div>
+      </div>
+    </main>
+
+    <main id="airtimePage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Buy Airtime</h2><p class="small">Enter the details below.</p><input id="airtimePhone" type="tel" placeholder="Phone number"><select id="airtimeNetwork"><option value="">Select network</option><option>MTN</option><option>Airtel</option><option>Glo</option><option>9mobile</option></select><input id="airtimeAmount" type="number" min="1" placeholder="Amount (₦)"><button id="airtimeBtn" class="primary" type="button">Continue</button><div id="airtimeMessage" class="msg"></div></div></main>
+
+    <main id="walletPage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Wallet</h2><p class="small">Your available balance</p><div id="walletBalancePage" class="hero-balance" style="color:#087a3b">₦0.00</div><button id="fundWalletPage" class="primary" type="button">Fund Wallet</button><div id="walletMessage" class="msg"></div></div></main>
+
+    <main id="rewardsPage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Rewards</h2><p class="small">Rewards appear only when activated by OmoData Pay.</p><div class="plan"><strong>Cashback</strong><p class="small">Currently unavailable.</p></div><div class="plan"><strong>Loyalty Points</strong><p class="small">Earn points when this feature is activated.</p></div><div class="plan"><strong>Festive Promotions</strong><p class="small">Promotions will be shown here when active.</p></div><div class="plan"><strong>Anniversary Rewards</strong><p class="small">Available when activated.</p></div></div></main>
+
+    <main id="adminPage" class="screen page-screen hidden">
+      <button class="back" data-page="profilePage" type="button">← Profile</button>
+      <div class="page-card">
+        <h2>Admin Dashboard</h2>
+        <p class="small">Private OmoData Pay control center. Customer pages remain separate.</p>
+        <div id="adminMessage" class="msg"></div>
+
+        <div class="admin-grid">
+          <button class="admin-stat" id="adminCustomersStat" type="button"><span>👥</span><div><strong>Customers</strong><small>Management ready</small></div></button>
+          <button class="admin-stat" id="adminTransactionsStat" type="button"><span>🧾</span><div><strong>Transactions</strong><small>Management ready</small></div></button>
+          <button class="admin-stat" id="adminWalletsStat" type="button"><span>💳</span><div><strong>Wallets</strong><small>Management ready</small></div></button>
+          <button class="admin-stat" id="adminDataStat" type="button"><span>📱</span><div><strong>Data &amp; Airtime</strong><small>Plans management</small></div></button>
+        </div>
+
+        <h3 class="admin-section-title">Reward controls</h3>
+        <p class="small">Cashback can be turned ON or OFF by the admin when the reward system is connected. These controls are currently safe visual settings only; no real-money reward action is performed.</p>
+        <div class="settings-list">
+          <div class="setting"><div><span class="setting-icon">💸</span><span><strong>Cashback</strong><br><small id="rewardCashbackText" class="small">Currently OFF</small></span></div><label class="switch"><input id="rewardCashback" type="checkbox"><span class="slider"></span></label></div>
+          <div class="setting"><div><span class="setting-icon">⭐</span><span><strong>Loyalty Points</strong><br><small id="rewardLoyaltyText" class="small">Currently OFF</small></span></div><label class="switch"><input id="rewardLoyalty" type="checkbox"><span class="slider"></span></label></div>
+          <div class="setting"><div><span class="setting-icon">🎉</span><span><strong>Festive Promotions</strong><br><small id="rewardFestiveText" class="small">Currently OFF</small></span></div><label class="switch"><input id="rewardFestive" type="checkbox"><span class="slider"></span></label></div>
+          <div class="setting"><div><span class="setting-icon">🎂</span><span><strong>Anniversary Rewards</strong><br><small id="rewardAnniversaryText" class="small">Currently OFF</small></span></div><label class="switch"><input id="rewardAnniversary" type="checkbox"><span class="slider"></span></label></div>
+          <div class="setting"><div><span class="setting-icon">🤝</span><span><strong>Invite &amp; Earn</strong><br><small id="rewardInviteText" class="small">Currently OFF</small></span></div><label class="switch"><input id="rewardInvite" type="checkbox"><span class="slider"></span></label></div>
+          <div class="setting"><div><span class="setting-icon">🚫</span><span><strong>Birthday Rewards</strong><br><small class="small">Kept OFF</small></span></div><label class="switch"><input type="checkbox" disabled><span class="slider"></span></label></div>
+        </div>
+
+        <h3 class="admin-section-title">Admin areas</h3>
+        <div class="settings-list">
+          <button class="setting" type="button" id="adminCustomersBtn"><div><span class="setting-icon">👥</span><span><strong>Customer Management</strong><br><small class="small">View authorized customer records</small></span></div><span>›</span></button>
+          <button class="setting" type="button" id="adminTransactionsBtn"><div><span class="setting-icon">🧾</span><span><strong>Transaction Management</strong><br><small class="small">Review transaction records</small></span></div><span>›</span></button>
+          <button class="setting" type="button" id="adminWalletsBtn"><div><span class="setting-icon">💳</span><span><strong>Wallet Management</strong><br><small class="small">Review wallet records</small></span></div><span>›</span></button>
+          <button class="setting" type="button" id="adminDataBtn"><div><span class="setting-icon">📶</span><span><strong>Data &amp; Airtime Management</strong><br><small class="small">Manage catalogue structure</small></span></div><span>›</span></button>
+          <button class="setting" type="button" id="adminSupportBtn"><div><span class="setting-icon">💬</span><span><strong>Support</strong><br><small class="small">Open support tools</small></span></div><span>›</span></button>
+        </div>
+      </div>
+    </main>
+
+    <main id="adminTransactionsPage" class="screen page-screen hidden"><button class="back" data-page="adminPage" type="button">← Admin Dashboard</button><div class="page-card"><h2>Transaction Management</h2><p class="small">Admin transaction workspace.</p><div class="plan"><strong>Transaction review</strong><p class="small">The transaction management screen is ready. Live all-customer transaction retrieval will be connected through a protected admin function.</p></div><div class="empty" style="box-shadow:none;padding:20px 5px"><div style="font-size:25px">🧾</div><div>No admin transaction feed connected yet.</div><small>This screen does not change or move customer funds.</small></div></div></main>
+
+    <main id="adminWalletsPage" class="screen page-screen hidden"><button class="back" data-page="adminPage" type="button">← Admin Dashboard</button><div class="page-card"><h2>Wallet Management</h2><p class="small">Admin wallet workspace.</p><div class="plan"><strong>Wallet records</strong><p class="small">The wallet management screen is ready for a protected admin read-only connection.</p></div><div class="empty" style="box-shadow:none;padding:20px 5px"><div style="font-size:25px">💳</div><div>No admin wallet feed connected yet.</div><small>No wallet balance is changed from this screen.</small></div></div></main>
+
+    <main id="adminDataPage" class="screen page-screen hidden"><button class="back" data-page="adminPage" type="button">← Admin Dashboard</button><div class="page-card"><h2>Data &amp; Airtime Management</h2><p class="small">Catalogue structure and supplier readiness.</p><div class="plan"><strong>Networks</strong><p class="small">MTN · Airtel · Glo · 9mobile</p></div><div class="plan"><strong>Catalogue status</strong><p class="small">Ready for legitimate supplier catalogue data. No invented plans or prices are shown.</p></div><div class="plan"><strong>Supplier connection</strong><p class="small">Not connected yet.</p></div></div></main>
+
+    <main id="adminSupportPage" class="screen page-screen hidden"><button class="back" data-page="adminPage" type="button">← Admin Dashboard</button><div class="page-card"><h2>Support</h2><p class="small">Private admin support workspace.</p><div class="plan"><strong>Support inbox</strong><p class="small">Ready for support messages and customer issue tracking.</p></div><div class="plan"><strong>Status</strong><p class="small">Support connection is not configured yet.</p></div></div></main>
+
+    <main id="adminCustomersPage" class="screen page-screen hidden">
+      <button class="back" data-page="adminPage" type="button">← Admin Dashboard</button>
+      <div class="page-card">
+        <h2>Customer Management</h2>
+        <p class="small">Authorized customer records from OmoData Pay.</p>
+        <div id="adminCustomersMessage" class="msg"></div>
+        <div id="adminCustomersList" class="activity-list" style="box-shadow:none;padding:0"></div>
+      </div>
+    </main>
+
+    <main id="transactionsPage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Transactions</h2><div id="transactionsList" class="empty" style="box-shadow:none;padding:25px 5px"><div style="font-size:25px">🧾</div><div>No transactions yet.</div><small>Your completed activity will appear here.</small></div></div></main>
+
+    <main id="profilePage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><div class="profile-head"><div id="avatar" class="avatar">O</div><div><h2>Profile & Settings</h2><p id="profileEmail">Account settings</p></div></div><div id="profileMessage" class="msg"></div><label class="small">Full name</label><input id="profileName" placeholder="Full name"><label class="small">Phone number</label><input id="profilePhone" placeholder="Phone number"><button id="saveProfileBtn" class="primary" type="button">Save Profile</button><div class="settings-list" style="margin-top:16px"><button class="setting" id="passwordBtn" type="button"><div><span class="setting-icon">🔐</span><span><strong>Change password</strong><br><small class="small">Update your account password</small></span></div><span>›</span></button><button class="setting" id="supportBtn" type="button"><div><span class="setting-icon">💬</span><span><strong>Support</strong><br><small class="small">Get help with your account</small></span></div><span>›</span></button><button class="setting hidden" id="adminBtn" type="button"><div><span class="setting-icon">⚙️</span><span><strong>Admin Dashboard</strong><br><small class="small">Private owner control center</small></span></div><span>›</span></button></div><button id="logoutBtn" class="primary danger" style="margin-top:18px" type="button">Sign Out</button></div></main>
+  </div>
+  <nav class="bottom"><button data-page="homePage" class="active" type="button"><span class="bi">⌂</span><small>Home</small></button><button data-page="dataPage" type="button"><span class="bi">▣</span><small>Data</small></button><button data-page="airtimePage" type="button"><span class="bi">▤</span><small>Airtime</small></button><button data-page="walletPage" type="button"><span class="bi">◉</span><small>Wallet</small></button></nav>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const SUPABASE_URL="https://kncjlguqbttxubdhlqyu.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_QkVH2iwGS1Tj4v1Td-HqVg_8mJoyY5l";
+let supabaseClient=null,currentUser=null,isAdmin=false;
+(function(){
+  const $=id=>document.getElementById(id);
+  const showMsg=(id,text)=>{const e=$(id);if(e){e.textContent=text;e.style.display="block"}};
+  const hideMsg=id=>{const e=$(id);if(e){e.textContent="";e.style.display="none"}};
+  const toast=text=>{const e=$("toast");if(!e)return;e.textContent=text;e.classList.remove("hidden");clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.add("hidden"),2200)};
+  function initials(user){const n=user?.user_metadata?.full_name||user?.user_metadata?.name||user?.email?.split("@")[0]||"O";return n.trim().charAt(0).toUpperCase()||"O"}
+  function setUserUI(user,profile){
+    const meta=user?.user_metadata||{};
+    const name=profile?.full_name||meta.full_name||meta.name||user?.email?.split("@")[0]||"there";
+    const phone=profile?.phone||meta.phone||"";
+    if($("welcomeText"))$("welcomeText").textContent=name+" 👋";
+    if($("profileName"))$("profileName").value=profile?.full_name||meta.full_name||meta.name||"";
+    if($("profilePhone"))$("profilePhone").value=phone;
+    if($("profileEmail"))$("profileEmail").textContent=user?.email||"Account settings";
+    if($("avatar"))$("avatar").textContent=initials({user_metadata:{full_name:name},email:user?.email});
+  }
+  function money(value){
+    const n=Number(value||0);
+    return "₦"+n.toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function transactionRow(t){
+    const type=(t.transaction_type||"Transaction").replace(/_/g," ");
+    const status=(t.status||"pending").replace(/_/g," ");
+    const date=t.created_at?new Date(t.created_at).toLocaleString("en-NG",{dateStyle:"medium",timeStyle:"short"}):"";
+    return `<div class="plan" style="margin-bottom:10px"><div class="plan-top"><strong>${escapeHtml(type)}</strong><span class="plan-price">${money(t.amount)}</span></div><p class="small">${escapeHtml(t.description||status)}${date?" · "+escapeHtml(date):""}</p></div>`;
+  }
+  function escapeHtml(value){
+    return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+  async function checkAdmin(user){
+    isAdmin=false;
+    const profileBtn=$("adminBtn"),homeBtn=$("adminHomeBtn");
+    if(profileBtn)profileBtn.classList.add("hidden");
+    if(homeBtn)homeBtn.classList.add("hidden");
+    if(!supabaseClient||!user?.id)return false;
+    try{
+      const r=await supabaseClient.rpc("is_current_user_admin");
+      if(r.error){
+        console.error("Admin RPC error",r.error);
+        showMsg("profileMessage","Admin access could not be checked. Please try again.");
+        return false;
+      }
+      isAdmin=r.data===true;
+      if(isAdmin){
+        profileBtn?.classList.remove("hidden");
+        homeBtn?.classList.remove("hidden");
+      }
+      return isAdmin;
+    }catch(e){
+      console.error("Admin RPC exception",e);
+      showMsg("profileMessage","Admin access could not be checked. Please try again.");
+      return false;
+    }
+  }
+  async function loadCustomerData(user){
+    if(!supabaseClient||!user?.id)return;
+    let profile=null;
+    const profileResult=await supabaseClient.from("profiles").select("full_name,phone").eq("id",user.id).maybeSingle();
+    if(profileResult.error)console.error("Profile load error",profileResult.error);
+    else profile=profileResult.data;
+    setUserUI(user,profile);
+
+    const walletResult=await supabaseClient.from("wallets").select("balance").eq("user_id",user.id).maybeSingle();
+    if(walletResult.error)console.error("Wallet load error",walletResult.error);
+    const balance=walletResult.data?.balance??0;
+    ["walletBalance","walletBalance2","walletBalancePage"].forEach(id=>{if($(id))$(id).textContent=money(balance)});
+
+    const txResult=await supabaseClient.from("transactions").select("id,transaction_type,status,amount,description,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(10);
+    if(txResult.error){
+      console.error("Transaction load error",txResult.error);
+      return;
+    }
+    const tx=txResult.data||[];
+    const recent=$("recentActivity");
+    const list=$("transactionsList");
+    if(!tx.length){
+      if(recent)recent.innerHTML='<div style="font-size:25px">↔</div><div>No transactions yet</div><small>Your data and airtime purchases will appear here.</small>';
+      if(list)list.innerHTML='<div style="font-size:25px">🧾</div><div>No transactions yet.</div><small>Your completed activity will appear here.</small>';
+    }else{
+      if(recent)recent.className="activity-list";
+      if(recent)recent.innerHTML=tx.slice(0,3).map(transactionRow).join("");
+      if(list){list.className="activity-list";list.style.boxShadow="none";list.style.padding="0";list.innerHTML=tx.map(transactionRow).join("");}
+    }
+  }
+  function showPage(id){
+    document.querySelectorAll(".page-screen").forEach(p=>p.classList.add("hidden"));
+    const page=$(id);if(page)page.classList.remove("hidden");else $("homePage")?.classList.remove("hidden");
+    document.querySelectorAll(".bottom button[data-page]").forEach(b=>b.classList.toggle("active",b.getAttribute("data-page")===id));
+    window.scrollTo({top:0,behavior:"instant"});
+  }
+  async function openApp(user){currentUser=user||currentUser;$("auth")?.classList.add("hidden");$("app")?.classList.remove("hidden");setUserUI(currentUser);showPage("homePage");await checkAdmin(currentUser);await loadCustomerData(currentUser)}
+  function showAuth(){$("app")?.classList.add("hidden");$("auth")?.classList.remove("hidden");$("loginBox")?.classList.remove("hidden");$("signupBox")?.classList.add("hidden")}
+  async function init(){
+    if(window.supabase&&typeof window.supabase.createClient==="function")supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    $("showSignupBtn")?.addEventListener("click",()=>{$("loginBox")?.classList.add("hidden");$("signupBox")?.classList.remove("hidden");hideMsg("loginMsg")});
+    $("showLoginBtn")?.addEventListener("click",()=>{$("signupBox")?.classList.add("hidden");$("loginBox")?.classList.remove("hidden");hideMsg("signupMsg")});
+    $("loginBtn")?.addEventListener("click",async()=>{hideMsg("loginMsg");const email=$("loginEmail")?.value.trim(),password=$("loginPassword")?.value||"";if(!email||!password)return showMsg("loginMsg","Enter your email and password.");if(!supabaseClient)return showMsg("loginMsg","Supabase is not connected. Check your internet connection.");const b=$("loginBtn");b.disabled=true;b.textContent="Signing in...";try{const r=await supabaseClient.auth.signInWithPassword({email,password});if(r.error)showMsg("loginMsg",r.error.message);else openApp(r.data.user)}catch(e){console.error(e);showMsg("loginMsg","Sign in could not be completed. Please try again.")}finally{b.disabled=false;b.textContent="Sign In"}});
+    $("signupBtn")?.addEventListener("click",async()=>{hideMsg("signupMsg");const name=$("signupName")?.value.trim(),phone=$("signupPhone")?.value.trim(),email=$("signupEmail")?.value.trim(),password=$("signupPassword")?.value||"";if(!name||!email||!password)return showMsg("signupMsg","Enter your name, email and password.");if(password.length<6)return showMsg("signupMsg","Password must be at least 6 characters.");if(!supabaseClient)return showMsg("signupMsg","Supabase is not connected. Check your internet connection.");const b=$("signupBtn");b.disabled=true;b.textContent="Creating account...";try{const r=await supabaseClient.auth.signUp({email,password,options:{data:{full_name:name,phone}}});if(r.error)showMsg("signupMsg",r.error.message);else if(r.data.session)openApp(r.data.user);else{showMsg("signupMsg","Account created. You can now sign in.");$("signupBox")?.classList.add("hidden");$("loginBox")?.classList.remove("hidden")}}catch(e){console.error(e);showMsg("signupMsg","Account creation could not be completed. Please try again.")}finally{b.disabled=false;b.textContent="Create Account"}});
+    document.addEventListener("click",async e=>{const b=e.target.closest("[data-page]");if(b){e.preventDefault();showPage(b.getAttribute("data-page"));return}const n=e.target.closest("[data-network]");if(n){showMsg("dataMessage",n.getAttribute("data-network")+" selected. Live supplier plans will appear when a legitimate supplier is connected.");return}});
+    $("fundWalletHome")?.addEventListener("click",()=>{showPage("walletPage");showMsg("walletMessage","Wallet funding is not connected yet. No money will be charged.")});
+    $("fundWalletPage")?.addEventListener("click",()=>showMsg("walletMessage","Wallet funding is not connected yet. No money will be charged."));
+    $("airtimeBtn")?.addEventListener("click",()=>showMsg("airtimeMessage","Airtime purchasing is not connected yet. No money will be charged."));
+    $("inviteBtn")?.addEventListener("click",()=>toast("Invite & Earn will be connected when referrals are activated."));
+    $("saveProfileBtn")?.addEventListener("click",async()=>{
+      if(!supabaseClient||!currentUser)return showMsg("profileMessage","Please sign in again.");
+      const name=$("profileName")?.value.trim()||"",phone=$("profilePhone")?.value.trim()||"";
+      if(!name)return showMsg("profileMessage","Enter your full name.");
+      const b=$("saveProfileBtn");b.disabled=true;b.textContent="Saving...";hideMsg("profileMessage");
+      try{
+        const profileUpdate=await supabaseClient.from("profiles").update({full_name:name,phone,updated_at:new Date().toISOString()}).eq("id",currentUser.id);
+        if(profileUpdate.error)throw profileUpdate.error;
+        const authUpdate=await supabaseClient.auth.updateUser({data:{full_name:name,phone}});
+        if(authUpdate.error)throw authUpdate.error;
+        currentUser=authUpdate.data.user||currentUser;
+        setUserUI(currentUser,{full_name:name,phone});
+        showMsg("profileMessage","Profile saved successfully.");toast("Profile saved");
+      }catch(e){console.error("Profile save error",e);showMsg("profileMessage","Profile could not be saved. Please try again.");}
+      finally{b.disabled=false;b.textContent="Save Profile"}
+    });
+    $("passwordBtn")?.addEventListener("click",()=>toast("Password reset is available from the secure account flow."));
+    $("supportBtn")?.addEventListener("click",()=>toast("Support will be connected here."));
+    const adminPageOpen=(id)=>{if(!isAdmin)return toast("Admin access is required.");showPage(id)};
+    const bindAdminNav=(btnId,pageId)=>$(btnId)?.addEventListener("click",()=>adminPageOpen(pageId));
+    bindAdminNav("adminCustomersStat","adminCustomersPage");$("adminCustomersBtn")?.addEventListener("click",async()=>{if(!isAdmin)return toast("Admin access is required.");showPage("adminCustomersPage");await loadAdminCustomers()});
+    bindAdminNav("adminTransactionsStat","adminTransactionsPage");bindAdminNav("adminTransactionsBtn","adminTransactionsPage");
+    bindAdminNav("adminWalletsStat","adminWalletsPage");bindAdminNav("adminWalletsBtn","adminWalletsPage");
+    bindAdminNav("adminDataStat","adminDataPage");bindAdminNav("adminDataBtn","adminDataPage");
+    bindAdminNav("adminSupportBtn","adminSupportPage");bindAdminNav("adminSupportBtn","adminSupportPage");
+    function setupRewardToggle(id,textId,label){const el=$(id),text=$(textId);el?.addEventListener("change",()=>{const on=el.checked;if(text)text.textContent=on?"Currently ON":"Currently OFF";toast(label+(on?" turned ON (visual setting only).":" turned OFF."));});}
+    setupRewardToggle("rewardCashback","rewardCashbackText","Cashback");setupRewardToggle("rewardLoyalty","rewardLoyaltyText","Loyalty Points");setupRewardToggle("rewardFestive","rewardFestiveText","Festive Promotions");setupRewardToggle("rewardAnniversary","rewardAnniversaryText","Anniversary Rewards");setupRewardToggle("rewardInvite","rewardInviteText","Invite & Earn");
+    async function loadAdminCustomers(){
+      const list=$("adminCustomersList"),msg=$("adminCustomersMessage");
+      if(!list||!supabaseClient||!isAdmin)return;
+      list.innerHTML='<div class="empty"><div style="font-size:25px">⏳</div><div>Loading customers...</div></div>';
+      hideMsg("adminCustomersMessage");
+      try{
+        const r=await supabaseClient.rpc("admin_list_customers");
+        if(r.error)throw r.error;
+        const customers=r.data||[];
+        if(!customers.length){list.innerHTML='<div class="empty"><div style="font-size:25px">👥</div><div>No customer records yet.</div><small>New registered customers will appear here.</small></div>';return}
+        list.innerHTML=customers.map(c=>`<div class="activity-row"><div><strong>${escapeHtml(c.full_name||"Unnamed customer")}</strong><br><small class="small">${escapeHtml(c.email||"No email")}</small><br><small class="small">${escapeHtml(c.phone||"No phone")}</small></div><div style="text-align:right"><small class="small">${c.created_at?new Date(c.created_at).toLocaleDateString():""}</small></div></div>`).join("");
+      }catch(e){
+        console.error("Admin customer load error",e);
+        const detail=e?.message||e?.details||e?.hint||"Unknown error";
+        showMsg("adminCustomersMessage",`Customer records could not be loaded. ${escapeHtml(detail)}`);
+        list.innerHTML="";
+      }
+    }
+    function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch]));}
+    const openAdmin=()=>{if(!isAdmin)return toast("Admin access is required.");showPage("adminPage")};
+    $("adminBtn")?.addEventListener("click",openAdmin);
+    $("adminHomeBtn")?.addEventListener("click",openAdmin);
+    $("logoutBtn")?.addEventListener("click",async()=>{
+      if(supabaseClient)await supabaseClient.auth.signOut();
+      currentUser=null;
+      isAdmin=false;
+      $("adminBtn")?.classList.add("hidden");
+      $("adminHomeBtn")?.classList.add("hidden");
+      showAuth();
+    });
+    if(supabaseClient){const r=await supabaseClient.auth.getSession();if(r.data?.session?.user)await openApp(r.data.session.user);supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session?.user)setTimeout(()=>openApp(session.user),0);if(event==="SIGNED_OUT")showAuth()})}
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+})();
+</script>
+</body>
+</html>
