@@ -453,16 +453,13 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
       finally{b.disabled=false;b.textContent="Save Profile"}
     });
     $("passwordBtn")?.addEventListener("click",async()=>{
-  const user=(await sb.auth.getUser()).data.user;
-  if(!user?.email){
+  if(!supabaseClient||!currentUser){
     toast("Please sign in again.");
     return;
   }
 
   const newPassword=prompt("Enter your new password:");
-  if(!newPassword){
-    return;
-  }
+  if(!newPassword)return;
 
   if(newPassword.length<8){
     toast("Password must be at least 8 characters.");
@@ -475,20 +472,19 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
     return;
   }
 
-  const {error}=await sb.auth.updateUser({password:newPassword});
+  const {error}=await supabaseClient.auth.updateUser({
+    password:newPassword
+  });
 
   if(error){
     toast(error.message);
     return;
-  if(window.supabase&&typeof window.supabase.createClient==="function"){
-  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-}else{
-  toast("Unable to connect to the secure service.");
-     }
+  }
 
   toast("Password changed successfully.");
 });
-    $("supportBtn")?.addEventListener("click",async()=>{
+
+$("supportBtn")?.addEventListener("click",async()=>{
   if(!supabaseClient||!currentUser){
     toast("Please sign in again.");
     return;
@@ -510,35 +506,6 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
 
   if(error){
     console.error("Support ticket error:",error);
-    toast("Unable to send support request.");
-    return;
-  }
-
-  toast("Support request sent successfully.");
-});
-  const {data:{user}}=await sb.auth.getUser();
-
-  if(!user){
-    toast("Please sign in again.");
-    return;
-  }
-
-  const subject=prompt("What do you need help with?");
-  if(!subject) return;
-
-  const message=prompt("Describe your issue:");
-  if(!message) return;
-
-  const {error}=await sb
-    .from("support_tickets")
-    .insert({
-      user_id:user.id,
-      subject:subject.trim(),
-      message:message.trim()
-    });
-
-  if(error){
-    console.error(error);
     toast("Unable to send support request.");
     return;
   }
