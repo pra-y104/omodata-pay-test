@@ -288,6 +288,33 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
   toast("Password changed successfully.");
 });
     $("supportBtn")?.addEventListener("click",async()=>{
+  if(!supabaseClient||!currentUser){
+    toast("Please sign in again.");
+    return;
+  }
+
+  const subject=prompt("What do you need help with?");
+  if(!subject?.trim())return;
+
+  const message=prompt("Describe your issue:");
+  if(!message?.trim())return;
+
+  const {error}=await supabaseClient
+    .from("support_tickets")
+    .insert({
+      user_id:currentUser.id,
+      subject:subject.trim(),
+      message:message.trim()
+    });
+
+  if(error){
+    console.error("Support ticket error:",error);
+    toast("Unable to send support request.");
+    return;
+  }
+
+  toast("Support request sent successfully.");
+});
   const {data:{user}}=await sb.auth.getUser();
 
   if(!user){
