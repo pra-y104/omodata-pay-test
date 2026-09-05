@@ -229,7 +229,11 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
   async function openApp(user){currentUser=user||currentUser;$("auth")?.classList.add("hidden");$("app")?.classList.remove("hidden");setUserUI(currentUser);showPage("homePage");await checkAdmin(currentUser);await loadCustomerData(currentUser)}
   function showAuth(){$("app")?.classList.add("hidden");$("auth")?.classList.remove("hidden");$("loginBox")?.classList.remove("hidden");$("signupBox")?.classList.add("hidden")}
   async function init(){
-    if(window.supabase&&typeof window.supabase.createClient==="function")supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    if(window.supabase&&typeof window.supabase.createClient==="function"){
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+}else{
+  toast("Unable to connect to the secure service.");
+    }
     $("showSignupBtn")?.addEventListener("click",()=>{$("loginBox")?.classList.add("hidden");$("signupBox")?.classList.remove("hidden");hideMsg("loginMsg")});
     $("showLoginBtn")?.addEventListener("click",()=>{$("signupBox")?.classList.add("hidden");$("loginBox")?.classList.remove("hidden");hideMsg("signupMsg")});
     $("loginBtn")?.addEventListener("click",async()=>{hideMsg("loginMsg");const email=$("loginEmail")?.value.trim(),password=$("loginPassword")?.value||"";if(!email||!password)return showMsg("loginMsg","Enter your email and password.");if(!supabaseClient)return showMsg("loginMsg","Supabase is not connected. Check your internet connection.");const b=$("loginBtn");b.disabled=true;b.textContent="Signing in...";try{const r=await supabaseClient.auth.signInWithPassword({email,password});if(r.error)showMsg("loginMsg",r.error.message);else openApp(r.data.user)}catch(e){console.error(e);showMsg("loginMsg","Sign in could not be completed. Please try again.")}finally{b.disabled=false;b.textContent="Sign In"}});
