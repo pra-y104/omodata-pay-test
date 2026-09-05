@@ -287,7 +287,11 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
   if(error){
     toast(error.message);
     return;
-  }
+  if(window.supabase&&typeof window.supabase.createClient==="function"){
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+}else{
+  toast("Unable to connect to the secure service.");
+     }
 
   toast("Password changed successfully.");
 });
