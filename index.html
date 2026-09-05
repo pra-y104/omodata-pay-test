@@ -229,10 +229,203 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
   async function openApp(user){currentUser=user||currentUser;$("auth")?.classList.add("hidden");$("app")?.classList.remove("hidden");setUserUI(currentUser);showPage("homePage");await checkAdmin(currentUser);await loadCustomerData(currentUser)}
   function showAuth(){$("app")?.classList.add("hidden");$("auth")?.classList.remove("hidden");$("loginBox")?.classList.remove("hidden");$("signupBox")?.classList.add("hidden")}
   async function init(){
-    if(window.supabase&&typeof window.supabase.createClient==="function"){
-  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-}else{
-  toast("Unable to connect to the secure service.");
+  if(window.supabase && typeof window.supabase.createClient==="function"){
+    supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  }else{
+    toast("Unable to connect to the secure service.");
+    return;
+  }
+
+  $("showSignupBtn")?.addEventListener("click",()=>{
+    $("loginBox")?.classList.add("hidden");
+    $("signupBox")?.classList.remove("hidden");
+    hideMsg("loginMsg");
+  });
+
+  $("showLoginBtn")?.addEventListener("click",()=>{
+    $("signupBox")?.classList.add("hidden");
+    $("loginBox")?.classList.remove("hidden");
+    hideMsg("signupMsg");
+  });
+
+  $("loginBtn")?.addEventListener("click",async()=>{
+    hideMsg("loginMsg");
+
+    const email=$("loginEmail")?.value.trim();
+    const password=$("loginPassword")?.value||"";
+
+    if(!email||!password){
+      showMsg("loginMsg","Enter your email and password.");
+      return;
+    }
+
+    const b=$("loginBtn");
+    b.disabled=true;
+    b.textContent="Signing in...";
+
+    try{
+      const r=await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if(r.error){
+        showMsg("loginMsg",r.error.message);
+      }else if(r.data?.user){
+        currentUser=r.data.user;
+        await openApp(currentUser);
+      }
+    }catch(e){
+      console.error("Sign in error:",e);
+      showMsg("loginMsg","Sign in could not be completed. Please try again.");
+    }finally{
+      b.disabled=false;
+      b.textContent="Sign In";
+    }
+  });
+
+  $("signupBtn")?.addEventListener("click",async()=>{
+    hideMsg("signupMsg");
+
+    const name=$("signupName")?.value.trim();
+    const phone=$("signupPhone")?.value.trim();
+    const email=$("signupEmail")?.value.trim();
+    const password=$("signupPassword")?.value||"";
+
+    if(!name||!email||!password){
+      showMsg("signupMsg","Enter your name, email and password.");
+      return;
+    }
+
+    if(password.length<6){
+      showMsg("signupMsg","Password must be at least 6 characters.");
+      return;
+    }
+
+    const b=$("signupBtn");
+    b.disabled=true;
+    b.textContent="Creating account...";
+
+    try{
+      const r=await supabaseClient.auth.signUp({
+        email,
+        password,
+        options:{data:{full_name:name,phone}}
+      });
+
+      if(r.error){
+        showMsg("signupMsg",r.error.message);
+      }else if(r.data?.session?.user){
+        currentUser=r.data.user;
+        await openApp(currentUser);
+      }else{
+        showMsg("signupMsg","Account created. You can now sign in.");
+        $("signupBox")?.classList.add("hidden");
+        $("loginBox")?.classList.remove("hidden");
+      }
+    }catch(e){
+      console.error("Account creation error:",e);
+      showMsg("signupMsg","Account creation could not be completed. Please try again.");
+    }finally{
+      b.disabled=false;
+      b.textContent="Create Account";
+    }
+  });
+
+  document.addEventListener("click",async e=>{
+    const b=e.target.closest("[data-page]");
+    if(b){
+      e.preventDefault();
+      showPage(b.getAttribute("data-page"));
+      return;
+    }
+
+    const n=e.target.closest("[data-network]");
+    if(n){
+      showMsg(
+        "dataMessage",
+        n.getAttribute("data-network")+" selected. Live supplier plans will appear when a legitimate supplier is connected."
+      );
+    }
+  });
+
+  $("fundWalletHome")?.addEventListener("click",()=>{
+    showPage("walletPage");
+    showMsg("walletMessage","Wallet funding is not connected yet. No money will be charged.");
+  });
+
+  $("fundWalletPage")?.addEventListener("click",()=>{
+    showMsg("walletMessage","Wallet funding is not connected yet. No money will be charged.");
+  });
+
+  $("airtimeBtn")?.addEventListener("click",()=>{
+    showMsg("airtimeMessage","Airtime purchasing is not connected yet. No money will be charged.");
+  });
+
+  $("inviteBtn")?.addEventListener("click",()=>{
+    toast("Invite & Earn will be connected when referrals are activated.");
+  });
+
+  $("passwordBtn")?.addEventListener("click",()=>{
+    toast("Password reset is available from the secure account flow.");
+  });
+
+  $("supportBtn")?.addEventListener("click",async()=>{
+    if(!supabaseClient||!currentUser){
+      toast("Please sign in again.");
+      return;
+    }
+
+    const subject=prompt("What do you need help with?");
+    if(!subject?.trim())return;
+
+    const message=prompt("Describe your issue:");
+    if(!message?.trim())return;
+
+    const {error}=await supabaseClient
+      .from("support_tickets")
+      .insert({
+        user_id:currentUser.id,
+        subject:subject.trim(),
+        message:message.trim()
+      });
+
+    if(error){
+      console.error("Support ticket error:",error);
+      toast("Unable to send support request.");
+      return;
+    }
+
+    toast("Support request sent successfully.");
+  });
+
+  $("logoutBtn")?.addEventListener("click",async()=>{
+    if(supabaseClient)await supabaseClient.auth.signOut();
+    currentUser=null;
+    isAdmin=false;
+    $("adminBtn")?.classList.add("hidden");
+    $("adminHomeBtn")?.classList.add("hidden");
+    showAuth();
+  });
+
+  if(supabaseClient){
+    const r=await supabaseClient.auth.getSession();
+
+    if(r.data?.session?.user){
+      currentUser=r.data.session.user;
+      await openApp(currentUser);
+    }
+
+    supabaseClient.auth.onAuthStateChange((event,session)=>{
+      if(event==="SIGNED_IN"&&session?.user){
+        setTimeout(()=>openApp(session.user),0);
+      }
+
+      if(event==="SIGNED_OUT"){
+        showAuth();
+      }
+    });
+  }
     }
     $("showSignupBtn")?.addEventListener("click",()=>{$("loginBox")?.classList.add("hidden");$("signupBox")?.classList.remove("hidden");hideMsg("loginMsg")});
     $("showLoginBtn")?.addEventListener("click",()=>{$("signupBox")?.classList.add("hidden");$("loginBox")?.classList.remove("hidden");hideMsg("signupMsg")});
