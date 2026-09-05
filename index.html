@@ -71,7 +71,7 @@
     <main id="rewardsPage" class="screen page-screen hidden"><button class="back" data-page="homePage" type="button">← Home</button><div class="page-card"><h2>Rewards</h2><p class="small">Rewards appear only when activated by OmoData Pay.</p><div class="plan"><strong>Cashback</strong><p class="small">Currently unavailable.</p></div><div class="plan"><strong>Loyalty Points</strong><p class="small">Earn points when this feature is activated.</p></div><div class="plan"><strong>Festive Promotions</strong><p class="small">Promotions will be shown here when active.</p></div><div class="plan"><strong>Anniversary Rewards</strong><p class="small">Available when activated.</p></div></div></main>
 
     <main id="adminPage" class="screen page-screen hidden">
-      <button class="back" data-page="profilePage" type="button">← Profile</button>
+      <button class="back" data-page=profilePage" type="button">← Profile</button>
       <div class="page-card">
         <h2>Admin Dashboard</h2>
         <p class="small">Private OmoData Pay control center. Customer pages remain separate.</p>
@@ -287,7 +287,36 @@ let supabaseClient=null,currentUser=null,isAdmin=false;
 
   toast("Password changed successfully.");
 });
-    $("supportBtn")?.addEventListener("click",()=>toast("Support will be connected here."));
+    $("supportBtn")?.addEventListener("click",async()=>{
+  const {data:{user}}=await sb.auth.getUser();
+
+  if(!user){
+    toast("Please sign in again.");
+    return;
+  }
+
+  const subject=prompt("What do you need help with?");
+  if(!subject) return;
+
+  const message=prompt("Describe your issue:");
+  if(!message) return;
+
+  const {error}=await sb
+    .from("support_tickets")
+    .insert({
+      user_id:user.id,
+      subject:subject.trim(),
+      message:message.trim()
+    });
+
+  if(error){
+    console.error(error);
+    toast("Unable to send support request.");
+    return;
+  }
+
+  toast("Support request sent successfully.");
+});
     const adminPageOpen=(id)=>{if(!isAdmin){toast("Admin access is required.");return false;}showPage(id);return true};
     const adminButtons={
       adminCustomersStat:"adminCustomersPage",adminCustomersBtn:"adminCustomersPage",
